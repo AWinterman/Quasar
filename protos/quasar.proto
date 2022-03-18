@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package quasar;
+
+
+service Quasar {
+  rpc Enqueue(EnqueueRequest) returns (Envelope);
+  rpc Subscribe(stream SubscribeRequest) returns (stream Envelope);
+}
+
+message EnqueueRequest {
+  string queue = 1;
+  string type = 2;
+  bytes  payload = 3;
+  string source = 4;
+}
+
+message EnqueueResponse {
+  string queue = 1;
+  string event_id = 2;
+}
+
+message SubscribeRequest {
+  string queue_name = 1;
+  string source = 2;
+  optional AckResponse ack = 3;
+  optional Envelope acking = 4;
+}
+
+enum AckResponse {
+  UNKNOWN_ACK_RESPONSE = 0;
+  ACK = 1;
+  NACK = 2;
+}
+
+
+message Envelope {
+  string source = 1;
+  string queue = 2;
+  string type = 3;
+  bytes payload = 4;
+  int64 injection_millis = 5;
+  string event_id = 6;
+}
