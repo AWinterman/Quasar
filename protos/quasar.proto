@@ -4,27 +4,37 @@ package quasar;
 
 
 service Quasar {
+  // Add a message to the queue
   rpc Enqueue(EnqueueRequest) returns (Envelope);
+  // Subscribe to a stream of messages
   rpc Subscribe(stream SubscribeRequest) returns (stream Envelope);
 }
 
 message EnqueueRequest {
+  // the topic or subject you want the message to end up on
   string queue = 1;
+  // the type of message, if you want to support heterogeneous queues
   string type = 2;
+  // the actual event
   bytes  payload = 3;
+  // where the event came from
   string source = 4;
 }
 
-message EnqueueResponse {
-  string queue = 1;
-  string event_id = 2;
-}
-
+// starts or continues a subscription.
+// Clients are expected to submit a subscribe request upon opening a connection with the queue name and an identifier
+// for the requesting service or entity.
+//
+// For each SubscribeRequest, the server will send single Envelope response, after the envelope has been processed,
+// the client should send another SubscribeRequest on the same stream with an AckResponse set, and a queue name and source
+// that match the first request. This serves to acknowledge the message, and signal that the client is ready for another.
+//
+// Because this is a stateful api, parallelism is achieved by opening multiple connections
 message SubscribeRequest {
   string queue_name = 1;
   string source = 2;
   optional AckResponse ack = 3;
-  optional Envelope acking = 4;
+  // todo: support apis where you have an actual id to ack with.
 }
 
 enum AckResponse {
