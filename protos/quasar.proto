@@ -74,5 +74,6 @@ message Event {
 }
 
 service SubscriptionSercive {
-  rpc SayHello (Snapshot) returns (stream Envelope)
+  rpc Subscribe (Snapshot) returns (stream Event)
 }
+ 
