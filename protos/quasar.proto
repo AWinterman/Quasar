@@ -52,3 +52,27 @@ message Envelope {
   int64 injection_millis = 5;
   string event_id = 6;
 }
+
+message Snapshot {
+  string org_guid = 1;
+  string clerk_schema_version = 2;
+  timestamp.Timestamp snapshot_epoch = 3;
+}
+
+enum EventType {
+  REQUESTED = 1;
+  SCHEDULED = 2;
+  WORKING = 3;
+  SUCCESS = 4;
+  FAILURE = 5;
+}
+
+message Event {
+  Snapshot snapshot = 1;
+  EventType type = 2; 
+  string error = 3;
+}
+
+service SubscriptionSercive {
+  rpc SayHello (Snapshot) returns (stream Envelope)
+}
